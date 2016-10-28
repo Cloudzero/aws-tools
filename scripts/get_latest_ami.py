@@ -6,13 +6,27 @@
 """
 Simple utility to get the latest AMI for a given image name, by default the Amazon Linux AMI
 
+Note: If you are using Hashicorp Terraform (> v0.7.7), don't run this script, just use this in your tf configuration
+
+      data "aws_ami" "linux_ami" {
+          most_recent = true
+          filter {
+              name = "owner-alias"
+              values = ["amazon"]
+          }
+          filter {
+              name = "name"
+              values = ["amzn-ami-hvm-*"]
+          }
+      }
+
 Usage:
     get_latest_ami.py [--name <NAME>] [--details]
     get_latest_ami.py -h | --help
 
 Options:
     -h --help       Show this screen
-    --name <NAME>   Name of image [default: customer_64bit_img].
+    --name <NAME>   Name of image [default: amzn-ami-hvm*].
     --details       Show all details of the image, not just the AMI
 """
 
@@ -20,6 +34,7 @@ from __future__ import print_function
 import boto3
 from docopt import docopt
 from pprint import pprint
+import operator
 
 
 def parse_commandline_arguments():
@@ -43,12 +58,14 @@ def main(args):
         ]
     )
 
+    sorted_images = sorted(response["Images"], key=operator.itemgetter('CreationDate'))
+
     count = 0
-    for count, image in enumerate(response["Images"], start=1):
+    for count, image in enumerate(sorted_images, start=1):
+        print("{} | {} | {}".format(image['CreationDate'], image['ImageId'], image['Description']))
         if args['--details']:
             pprint(image)
-        else:
-            print(image['ImageId'])
+            print("-" * 80)
 
     print('Search finished, {} images found'.format(count))
 
