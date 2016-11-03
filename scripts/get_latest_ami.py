@@ -36,9 +36,11 @@ from docopt import docopt
 from pprint import pprint
 import operator
 
+__VERSION__ = "0.1"
+
 
 def parse_commandline_arguments():
-    return docopt(__doc__, version='Get Latest AMI')
+    return docopt(__doc__, version=__VERSION__)
 
 
 def main(args):
