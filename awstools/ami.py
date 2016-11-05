@@ -21,29 +21,31 @@ Note: If you are using Hashicorp Terraform (> v0.7.7), don't run this script, ju
       }
 
 Usage:
-    get_latest_ami.py [--name <NAME>] [--details]
-    get_latest_ami.py -h | --help
+    ami [--name <NAME>] [--details] [--latest]
+    ami -h | --help
 
 Options:
     -h --help       Show this screen
     --name <NAME>   Name of image [default: amzn-ami-hvm*].
     --details       Show all details of the image, not just the AMI
+    --latest        Show only the latest AMI
 """
 
 from __future__ import print_function
+from awstools import __VERSION__
+
 import boto3
 from docopt import docopt
-from pprint import pprint
 import operator
-
-__VERSION__ = "0.1"
 
 
 def parse_commandline_arguments():
     return docopt(__doc__, version=__VERSION__)
 
 
-def main(args):
+def main():
+    args = parse_commandline_arguments()
+
     client = boto3.client('ec2')
 
     response = client.describe_images(
@@ -62,16 +64,22 @@ def main(args):
 
     sorted_images = sorted(response["Images"], key=operator.itemgetter('CreationDate'))
 
-    count = 0
-    for count, image in enumerate(sorted_images, start=1):
-        print("{} | {} | {}".format(image['CreationDate'], image['ImageId'], image['Description']))
+    if args['--latest']:
+        image = sorted_images[-1]
         if args['--details']:
-            pprint(image)
-            print("-" * 80)
+            print("{} | {} | {}".format(image['CreationDate'], image['ImageId'], image['Description']))
+        else:
+            print(image['ImageId'])
+    else:
+        count = 0
+        for count, image in enumerate(sorted_images, start=1):
+            if args['--details']:
+                print("{} | {} | {}".format(image['CreationDate'], image['ImageId'], image['Description']))
+            else:
+                print(image['ImageId'])
 
-    print('Search finished, {} images found'.format(count))
-
+        if args['--details']:
+            print('Search finished, {} images found'.format(count))
 
 if __name__ == "__main__":
-    docopt_args = parse_commandline_arguments()
-    main(docopt_args)
+    main()

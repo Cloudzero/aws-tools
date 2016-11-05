@@ -1,2 +1,2 @@
-# aws-tools
-A collection of random or short snippets of code for basic AWS things for no reason other than I wanted to create them
+# CloudZero aws-tools
+A collection of tools for basic or everyday AWS operations to make life easier 

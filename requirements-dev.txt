@@ -1,0 +1,10 @@
+boto3
+docopt
+wheel
+pep8
+pudb
+radon
+pytest-cov
+pytest
+tox
+-e .
