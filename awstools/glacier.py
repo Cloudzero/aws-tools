@@ -74,11 +74,10 @@ def main():
 
     if args['delete']:
         print("\nDeleting all Vaults:")
-        print(" - Checking for available inventory data.")
         for vault in vault_list:
             if vault['archive_count'] == 0:
                 print(" - Vault '{}' is empty, deleting".format(vault['name']))
-                # client.delete_vault(vaultName=vault['name'])
+                client.delete_vault(vaultName=vault['name'])
             elif ready_for_archive_delete(vault, client):
                 print(" - Starting delete of all archives from vault {}".format(vault['name']))
                 count = delete_all_archives_from_vault(vault, client)
