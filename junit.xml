@@ -1,1 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?><testsuite errors="0" failures="0" name="pytest" skips="0" tests="1" time="0.598"><testcase classname="awstools.tests.unit.test_glacier_tool" file="awstools/tests/unit/test_glacier_tool.py" line="8" name="test_has_24hours_passed_since" time="0.0007483959197998047"></testcase></testsuite>
