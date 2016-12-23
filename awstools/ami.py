@@ -16,17 +16,18 @@ Note: If you are using Hashicorp Terraform (> v0.7.7), don't run this script, ju
           }
           filter {
               name = "name"
-              values = ["amzn-ami-hvm-*"]
+              values = ["amzn-ami-hvm-*gp2"]
           }
       }
 
 Usage:
-    ami [--name <NAME>] [--details] [--latest]
+    ami [--name <NAME>] [--type <TYPE>] [--details] [--latest]
     ami -h | --help
 
 Options:
     -h --help       Show this screen
     --name <NAME>   Name of image [default: amzn-ami-hvm*].
+    --type <TYPE>   Type of image, either gp2, ebs or s3 [default: gp2]
     --details       Show all details of the image, not just the AMI
     --latest        Show only the latest AMI
 """
@@ -56,7 +57,7 @@ def main():
             {
                 'Name': 'name',
                 'Values': [
-                    args['--name'],
+                    "{}{}".format(args['--name'], args['--type']),
                 ]
             },
         ]
@@ -67,14 +68,16 @@ def main():
     if args['--latest']:
         image = sorted_images[-1]
         if args['--details']:
-            print("{} | {} | {}".format(image['CreationDate'], image['ImageId'], image['Description']))
+            print("{} | {} | {} | {}".format(image['CreationDate'], image['ImageId'], image['Name'],
+                                             image['Description']))
         else:
             print(image['ImageId'])
     else:
         count = 0
         for count, image in enumerate(sorted_images, start=1):
             if args['--details']:
-                print("{} | {} | {}".format(image['CreationDate'], image['ImageId'], image['Description']))
+                print("{} | {} | {} | {}".format(image['CreationDate'], image['ImageId'], image['Name'],
+                                                 image['Description']))
             else:
                 print(image['ImageId'])
 
